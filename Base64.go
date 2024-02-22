@@ -41,7 +41,11 @@ func parseInput() bool {
 }
 
 func encode() {
-
+	first := charSet[inRunes[0]>>2]
+	second := charSet[((inRunes[0]&0b11)<<4)+(inRunes[1])>>4]
+	third := charSet[((inRunes[1]&0b1111)<<2)+(inRunes[2])>>6]
+	fourth := charSet[inRunes[2]&0b111111]
+	fmt.Println(first + second + third + fourth)
 }
 
 func decode() {
