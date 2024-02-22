@@ -17,7 +17,6 @@ var charSet = [64]string{
 var isDecoding bool = false
 var inRunes []rune
 var output string = ""
-var outRunes []rune
 
 func parseInput() bool {
 	if len(os.Args) > 2 {
@@ -41,11 +40,30 @@ func parseInput() bool {
 }
 
 func encode() {
-	first := charSet[inRunes[0]>>2]
-	second := charSet[((inRunes[0]&0b11)<<4)+(inRunes[1])>>4]
-	third := charSet[((inRunes[1]&0b1111)<<2)+(inRunes[2])>>6]
-	fourth := charSet[inRunes[2]&0b111111]
-	fmt.Println(first + second + third + fourth)
+	numRunes := len(inRunes)
+	for i := 0; i < numRunes/3; i++ {
+		currRune := i * 3
+		output = output + charSet[inRunes[currRune]>>2]
+		output = output + charSet[((inRunes[currRune]&0b11)<<4)+(inRunes[currRune+1])>>4]
+		output = output + charSet[((inRunes[currRune+1]&0b1111)<<2)+(inRunes[currRune+2])>>6]
+		output = output + charSet[inRunes[currRune+2]&0b111111]
+	}
+
+	remainder := numRunes % 3
+
+	switch remainder {
+	case 1:
+		output = output + charSet[inRunes[numRunes-1]>>2]
+		output = output + charSet[((inRunes[numRunes-1]&0b11)<<4)]
+		output = output + "=="
+	case 2:
+		output = output + charSet[inRunes[numRunes-2]>>2]
+		output = output + charSet[((inRunes[numRunes-2]&0b11)<<4)+(inRunes[numRunes-1])>>4]
+		output = output + charSet[((inRunes[numRunes-1]&0b1111)<<2)]
+		output = output + "="
+	}
+
+	fmt.Println(output)
 }
 
 func decode() {
